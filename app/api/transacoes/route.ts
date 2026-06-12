@@ -1,46 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const tipo = searchParams.get("tipo");
-  const mes = searchParams.get("mes"); // YYYY-MM
+  const mes = searchParams.get("mes");
 
-  const where: Record<string, unknown> = {};
-  if (tipo) where.tipo = tipo;
+  let query = "SELECT * FROM transacoes";
+  const conditions: string[] = [];
+  const params: unknown[] = [];
+
+  if (tipo) {
+    params.push(tipo);
+    conditions.push(`tipo = $${params.length}`);
+  }
   if (mes) {
     const [year, month] = mes.split("-").map(Number);
-    where.data = {
-      gte: new Date(year, month - 1, 1),
-      lt: new Date(year, month, 1),
-    };
+    params.push(new Date(year, month - 1, 1).toISOString());
+    conditions.push(`data >= $${params.length}`);
+    params.push(new Date(year, month, 1).toISOString());
+    conditions.push(`data < $${params.length}`);
   }
 
-  const transacoes = await prisma.transacao.findMany({
-    where,
-    orderBy: { data: "desc" },
-  });
+  if (conditions.length > 0) query += " WHERE " + conditions.join(" AND ");
+  query += " ORDER BY data DESC";
 
-  return NextResponse.json(transacoes);
+  const rows = await sql(query, params);
+  return NextResponse.json(rows);
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { tipo, descricao, valor, categoria, data } = body;
+  const { tipo, descricao, valor, categoria, data } = await req.json();
 
   if (!tipo || !descricao || !valor || !categoria) {
     return NextResponse.json({ error: "Campos obrigatórios faltando" }, { status: 400 });
   }
 
-  const transacao = await prisma.transacao.create({
-    data: {
-      tipo,
-      descricao,
-      valor: parseFloat(valor),
-      categoria,
-      data: data ? new Date(data) : new Date(),
-    },
-  });
+  const id = crypto.randomUUID();
+  const dataFinal = data ? new Date(data).toISOString() : new Date().toISOString();
 
-  return NextResponse.json(transacao, { status: 201 });
+  const rows = await sql(
+    `INSERT INTO transacoes (id, tipo, descricao, valor, categoria, data, "createdAt")
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    [id, tipo, descricao, parseFloat(valor), categoria, dataFinal, new Date().toISOString()]
+  );
+
+  return NextResponse.json(rows[0], { status: 201 });
 }
