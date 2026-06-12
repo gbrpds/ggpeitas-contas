@@ -26,6 +26,7 @@ export default function Contatos() {
   const [contatos, setContatos] = useState<Contato[]>([]);
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editando, setEditando] = useState<Contato | null>(null);
 
   const carregar = useCallback(async () => {
     setLoading(true);
@@ -46,7 +47,6 @@ export default function Contatos() {
 
   return (
     <div className="min-h-screen" style={{ background: "#0a0a0a" }}>
-      {/* Header */}
       <header style={{ borderBottom: "1px solid #1c1c1c", background: "#0a0a0a" }}>
         <div className="max-w-4xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -63,7 +63,6 @@ export default function Contatos() {
       </header>
 
       <main className="max-w-4xl mx-auto px-5 py-8" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        {/* Resumo */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div style={{ background: "#111", border: "1px solid #1c1c1c", borderRadius: 12, padding: "16px 20px" }}>
             <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#444", marginBottom: 6 }}>Clientes</p>
@@ -79,7 +78,6 @@ export default function Contatos() {
           </div>
         </div>
 
-        {/* Busca */}
         <input
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
@@ -87,7 +85,6 @@ export default function Contatos() {
           style={{ width: "100%", padding: "11px 16px", borderRadius: 10, background: "#111", border: "1px solid #1c1c1c", color: "#fff", fontSize: 13, outline: "none" }}
         />
 
-        {/* Lista */}
         <div style={{ border: "1px solid #1c1c1c", borderRadius: 12, overflow: "hidden" }}>
           <div style={{ background: "#111", borderBottom: "1px solid #1c1c1c", padding: "10px 18px" }}>
             <p style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: "#444" }}>
@@ -105,7 +102,6 @@ export default function Contatos() {
               <p style={{ fontSize: 13, fontWeight: 700, color: "#333" }}>
                 {busca ? "Nenhum resultado." : "Nenhum contato ainda."}
               </p>
-              <p style={{ fontSize: 12, color: "#2a2a2a", marginTop: 4 }}>Registre vendas com o nome do comprador.</p>
             </div>
           ) : (
             <div style={{ background: "#0d0d0d" }}>
@@ -114,7 +110,6 @@ export default function Contatos() {
                   display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",
                   borderBottom: i < lista.length - 1 ? "1px solid #141414" : undefined,
                 }}>
-                  {/* Avatar */}
                   <div style={{
                     width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
                     background: "#1a1a1a", border: "1px solid #252525",
@@ -124,7 +119,6 @@ export default function Contatos() {
                     {c.comprador.charAt(0).toUpperCase()}
                   </div>
 
-                  {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{c.comprador}</p>
                     <div style={{ display: "flex", gap: 12, marginTop: 3, flexWrap: "wrap" }}>
@@ -147,20 +141,100 @@ export default function Contatos() {
                     )}
                   </div>
 
-                  {/* Stats */}
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ textAlign: "right", flexShrink: 0, marginRight: 8 }}>
                     <p style={{ fontSize: 13, fontWeight: 900, fontFamily: "monospace", color: "#F5C400" }}>{fmt(c.total_gasto)}</p>
                     <p style={{ fontSize: 11, color: "#444", marginTop: 2 }}>
                       {c.total_compras} compra{Number(c.total_compras) !== 1 ? "s" : ""}
                     </p>
                     <p style={{ fontSize: 10, color: "#333", marginTop: 1 }}>{fmtData(c.ultima_compra)}</p>
                   </div>
+
+                  <button
+                    onClick={() => setEditando(c)}
+                    style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid #252525", background: "#1a1a1a", color: "#555", cursor: "pointer", fontSize: 13, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#F5C400")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#555")}
+                    title="Editar contato"
+                  >
+                    ✎
+                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
       </main>
+
+      {editando && (
+        <ModalEditar
+          contato={editando}
+          onClose={() => setEditando(null)}
+          onSalvo={() => { setEditando(null); carregar(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function ModalEditar({ contato, onClose, onSalvo }: { contato: Contato; onClose: () => void; onSalvo: () => void }) {
+  const [email, setEmail] = useState(contato.email ?? "");
+  const [telefone, setTelefone] = useState(contato.telefone ?? "");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch("/api/contatos", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comprador: contato.comprador, email: email || null, telefone: telefone || null }),
+      });
+      if (!res.ok) throw new Error();
+      onSalvo();
+    } catch {
+      setErro("Erro ao salvar.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "10px 14px", borderRadius: 8,
+    background: "#1a1a1a", border: "1px solid #252525", color: "#fff", fontSize: 13, outline: "none",
+  };
+
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.88)", backdropFilter: "blur(6px)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: "#111", borderTop: "2px solid #F5C400", borderLeft: "1px solid #222", borderRight: "1px solid #222", borderRadius: "20px 20px 0 0", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #1c1c1c", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <p style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#555", marginBottom: 4 }}>Editar Contato</p>
+            <h2 style={{ fontSize: 18, fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase", color: "#F5C400", margin: 0 }}>
+              {contato.comprador}
+            </h2>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#555", fontSize: 18, cursor: "pointer", padding: 4 }}>✕</button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555", marginBottom: 6 }}>Telefone</p>
+            <input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="(11) 99999-9999" style={inputStyle} />
+          </div>
+          <div>
+            <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555", marginBottom: 6 }}>E-mail</p>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemplo.com" style={inputStyle} />
+          </div>
+
+          {erro && <p style={{ fontSize: 12, color: "#ef4444", background: "rgba(239,68,68,0.08)", padding: "8px 12px", borderRadius: 8 }}>{erro}</p>}
+
+          <button type="submit" disabled={loading} style={{ width: "100%", padding: "14px", borderRadius: 10, fontSize: 13, fontWeight: 900, letterSpacing: "0.15em", textTransform: "uppercase", border: "none", cursor: "pointer", background: "#F5C400", color: "#000", opacity: loading ? 0.5 : 1 }}>
+            {loading ? "Salvando..." : "Salvar"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

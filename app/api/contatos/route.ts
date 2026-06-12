@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 
 export async function GET() {
-  // Retorna um contato por comprador, com o histórico de compras agregado
   const rows = await sql`
     SELECT
       comprador,
@@ -18,4 +17,16 @@ export async function GET() {
     ORDER BY ultima_compra DESC
   `;
   return NextResponse.json(rows);
+}
+
+export async function PUT(req: NextRequest) {
+  const { comprador, email, telefone } = await req.json();
+  if (!comprador) return NextResponse.json({ error: "Comprador obrigatório" }, { status: 400 });
+
+  await sql`
+    UPDATE transacoes
+    SET email = ${email ?? null}, telefone = ${telefone ?? null}
+    WHERE comprador = ${comprador} AND tipo = 'VENDA'
+  `;
+  return NextResponse.json({ ok: true });
 }
