@@ -40,8 +40,7 @@ export default function Dashboard() {
     if (filtroTipo !== "TODOS") params.set("tipo", filtroTipo);
     if (mes) params.set("mes", mes);
     const res = await fetch(`/api/transacoes?${params}`);
-    const data = await res.json();
-    setTransacoes(data);
+    setTransacoes(await res.json());
     setLoading(false);
   }, [filtroTipo, mes]);
 
@@ -57,246 +56,123 @@ export default function Dashboard() {
 
   const vendas = transacoes.filter(t => t.tipo === "VENDA");
   const saidas = transacoes.filter(t => t.tipo === "SAIDA");
-
   const totalBruto = vendas.reduce((s, t) => s + t.valor, 0);
   const totalFrete = vendas.reduce((s, t) => s + (t.frete || 0), 0);
   const totalSaidas = saidas.reduce((s, t) => s + t.valor, 0);
-  const lucroLiquido = totalBruto - totalFrete - totalSaidas;
+  const lucro = totalBruto - totalFrete - totalSaidas;
 
   return (
-    <div className="min-h-screen" style={{ background: "#050505" }}>
+    <div className="min-h-screen" style={{ background: "#0a0a0a" }}>
       {/* Header */}
-      <header
-        className="px-6 py-4 sticky top-0 z-40"
-        style={{
-          background: "linear-gradient(180deg, #080808 0%, rgba(5,5,5,0.95) 100%)",
-          borderBottom: "1px solid #161616",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+      <header style={{ borderBottom: "1px solid #1c1c1c", background: "#0a0a0a" }}>
+        <div className="max-w-4xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="GG Peitas" width={40} height={40} className="object-contain" />
+            <Image src="/logo.png" alt="GG Peitas" width={36} height={36} className="object-contain" />
             <div>
-              <p className="text-xs uppercase tracking-[0.3em]" style={{ color: "#444" }}>
-                GG Peitas
-              </p>
-              <h1 className="text-sm font-black tracking-widest uppercase leading-none" style={{ color: "#F5C400" }}>
-                Controle Financeiro
-              </h1>
+              <p style={{ fontSize: 10, letterSpacing: "0.25em", color: "#555", textTransform: "uppercase" }}>GG Peitas</p>
+              <p style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.2em", color: "#F5C400", textTransform: "uppercase", lineHeight: 1 }}>Financeiro</p>
             </div>
           </div>
-
-          <div className="flex gap-2">
-            <Link
-              href="/estoque"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black tracking-wider uppercase transition-all hover:opacity-90"
-              style={{ background: "#111", color: "#666", border: "1px solid #1a1a1a" }}
-            >
-              👕 Estoque
+          <div style={{ display: "flex", gap: 8 }}>
+            <Link href="/estoque" style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#555", border: "1px solid #222", background: "transparent", textDecoration: "none" }}>
+              Estoque
             </Link>
-            <button
-              onClick={() => setModal("VENDA")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black tracking-wider uppercase transition-all hover:opacity-90 active:scale-95"
-              style={{
-                background: "linear-gradient(135deg, #009942, #008C3A)",
-                color: "#fff",
-                boxShadow: "0 4px 15px rgba(0,140,58,0.3)",
-              }}
-            >
-              <span>⚽</span> Venda
+            <button onClick={() => setModal("SAIDA")} style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff", border: "1px solid #ef4444", background: "transparent", cursor: "pointer" }}>
+              − Saída
             </button>
-            <button
-              onClick={() => setModal("SAIDA")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black tracking-wider uppercase transition-all hover:opacity-90 active:scale-95"
-              style={{
-                background: "#111",
-                color: "#F5C400",
-                border: "1px solid #2a2a2a",
-              }}
-            >
-              <span>↓</span> Saída
+            <button onClick={() => setModal("VENDA")} style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff", background: "#008C3A", border: "none", cursor: "pointer" }}>
+              + Venda
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        {/* Cards resumo */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <SummaryCard
-            label="Vendas brutas"
-            value={fmt(totalBruto)}
-            sub={`${vendas.length} venda${vendas.length !== 1 ? "s" : ""}`}
-            color="#008C3A"
-            glow="rgba(0,140,58,0.15)"
-          />
-          <SummaryCard
-            label="Frete enviado"
-            value={fmt(totalFrete)}
-            sub="custo de envio"
-            color="#f97316"
-            glow="rgba(249,115,22,0.1)"
-          />
-          <SummaryCard
-            label="Saídas / Invest."
-            value={fmt(totalSaidas)}
-            sub={`${saidas.length} registro${saidas.length !== 1 ? "s" : ""}`}
-            color="#ef4444"
-            glow="rgba(239,68,68,0.1)"
-          />
-          <SummaryCard
-            label="Lucro líquido"
-            value={fmt(lucroLiquido)}
-            sub="resultado final"
-            color={lucroLiquido >= 0 ? "#F5C400" : "#ef4444"}
-            glow={lucroLiquido >= 0 ? "rgba(245,196,0,0.12)" : "rgba(239,68,68,0.1)"}
-            destaque
-          />
+      <main className="max-w-4xl mx-auto px-5 py-8" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {/* Resumo */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+          {[
+            { label: "Vendas brutas", value: fmt(totalBruto), color: "#fff" },
+            { label: "Frete enviado", value: fmt(totalFrete), color: "#888" },
+            { label: "Saídas", value: fmt(totalSaidas), color: "#ef4444" },
+            { label: "Lucro líquido", value: fmt(lucro), color: lucro >= 0 ? "#F5C400" : "#ef4444" },
+          ].map((c) => (
+            <div key={c.label} style={{ background: "#111", border: "1px solid #1c1c1c", borderRadius: 12, padding: "14px 16px" }}>
+              <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#444", marginBottom: 6 }}>{c.label}</p>
+              <p style={{ fontSize: 18, fontWeight: 900, fontFamily: "monospace", color: c.color, letterSpacing: "-0.02em" }}>{c.value}</p>
+            </div>
+          ))}
         </div>
 
         {/* Filtros */}
-        <div className="flex flex-wrap gap-2 items-center">
-          <div
-            className="flex rounded-xl overflow-hidden p-0.5"
-            style={{ background: "#111", border: "1px solid #1a1a1a" }}
-          >
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", border: "1px solid #1c1c1c", borderRadius: 10, overflow: "hidden" }}>
             {(["TODOS", "VENDA", "SAIDA"] as const).map((t) => {
               const active = filtroTipo === t;
               return (
-                <button
-                  key={t}
-                  onClick={() => setFiltroTipo(t)}
-                  className="px-4 py-1.5 rounded-lg text-xs font-black tracking-wider uppercase transition-all"
-                  style={{
-                    background: active
-                      ? t === "VENDA" ? "#008C3A" : t === "SAIDA" ? "#F5C400" : "#fff"
-                      : "transparent",
-                    color: active
-                      ? t === "VENDA" ? "#fff" : "#050505"
-                      : "#444",
-                  }}
-                >
+                <button key={t} onClick={() => setFiltroTipo(t)} style={{
+                  padding: "7px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", border: "none",
+                  background: active ? (t === "VENDA" ? "#008C3A" : t === "SAIDA" ? "#ef4444" : "#fff") : "#111",
+                  color: active ? (t === "TODOS" ? "#000" : "#fff") : "#444",
+                }}>
                   {t === "TODOS" ? "Todos" : t === "VENDA" ? "Vendas" : "Saídas"}
                 </button>
               );
             })}
           </div>
-
-          <select
-            value={mes}
-            onChange={(e) => setMes(e.target.value)}
-            className="px-3 py-2 rounded-xl text-xs font-semibold outline-none"
-            style={{
-              background: "#111",
-              border: "1px solid #1a1a1a",
-              color: mes ? "#fff" : "#444",
-              colorScheme: "dark",
-            }}
-          >
+          <select value={mes} onChange={(e) => setMes(e.target.value)} style={{ padding: "7px 12px", borderRadius: 10, fontSize: 11, fontWeight: 700, color: mes ? "#fff" : "#444", background: "#111", border: "1px solid #1c1c1c", letterSpacing: "0.1em", colorScheme: "dark", cursor: "pointer" }}>
             <option value="">Todos os meses</option>
-            {getMeses().map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
+            {getMeses().map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
         </div>
 
         {/* Tabela */}
-        <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid #161616" }}>
-          <div
-            className="px-5 py-3.5 flex items-center justify-between"
-            style={{ background: "#0a0a0a", borderBottom: "1px solid #161616" }}
-          >
-            <span className="text-xs uppercase tracking-widest" style={{ color: "#444" }}>
-              Histórico — {transacoes.length} registro{transacoes.length !== 1 ? "s" : ""}
-            </span>
+        <div style={{ border: "1px solid #1c1c1c", borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ background: "#111", borderBottom: "1px solid #1c1c1c", padding: "10px 18px" }}>
+            <p style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: "#444" }}>
+              Histórico · {transacoes.length} registro{transacoes.length !== 1 ? "s" : ""}
+            </p>
           </div>
 
           {loading ? (
-            <div className="py-20 text-center" style={{ background: "#0d0d0d" }}>
-              <div className="text-2xl mb-2">⏳</div>
-              <p className="text-xs uppercase tracking-widest" style={{ color: "#333" }}>Carregando...</p>
+            <div style={{ padding: "60px 20px", textAlign: "center", background: "#0d0d0d" }}>
+              <p style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#333" }}>Carregando...</p>
             </div>
           ) : transacoes.length === 0 ? (
-            <div className="py-20 text-center" style={{ background: "#0d0d0d" }}>
-              <div className="text-3xl mb-3">📋</div>
-              <p className="text-sm font-semibold" style={{ color: "#333" }}>Nenhuma transação ainda</p>
-              <p className="text-xs mt-1" style={{ color: "#2a2a2a" }}>Registre uma venda ou saída acima</p>
+            <div style={{ padding: "60px 20px", textAlign: "center", background: "#0d0d0d" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#333" }}>Nenhuma transação ainda</p>
             </div>
           ) : (
             <div style={{ background: "#0d0d0d" }}>
               {transacoes.map((t, i) => (
-                <div
-                  key={t.id}
-                  className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.02]"
-                  style={{
-                    borderBottom: i < transacoes.length - 1 ? "1px solid #141414" : undefined,
-                    opacity: deletando === t.id ? 0.3 : 1,
-                  }}
-                >
-                  {/* Ícone tipo */}
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
-                    style={{
-                      background: t.tipo === "VENDA"
-                        ? "rgba(0,140,58,0.15)"
-                        : "rgba(239,68,68,0.12)",
-                    }}
-                  >
-                    {t.tipo === "VENDA" ? "⚽" : "↓"}
-                  </div>
-
-                  {/* Info principal */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{t.descricao}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span
-                        className="text-xs px-1.5 py-0.5 rounded font-medium"
-                        style={{
-                          background: t.tipo === "VENDA" ? "rgba(0,140,58,0.1)" : "rgba(239,68,68,0.1)",
-                          color: t.tipo === "VENDA" ? "#4ade80" : "#f87171",
-                        }}
-                      >
-                        {t.categoria}
-                      </span>
-                      {t.tamanho && (
-                        <span className="text-xs px-1.5 py-0.5 rounded font-bold" style={{ background: "#1a1a1a", color: "#666" }}>
-                          {t.tamanho}
-                        </span>
-                      )}
-                      <span className="text-xs" style={{ color: "#333" }}>{fmtData(t.data)}</span>
+                <div key={t.id} style={{
+                  display: "flex", alignItems: "center", gap: 14, padding: "12px 18px",
+                  borderBottom: i < transacoes.length - 1 ? "1px solid #141414" : undefined,
+                  opacity: deletando === t.id ? 0.3 : 1,
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.descricao}</p>
+                    <div style={{ display: "flex", gap: 8, marginTop: 3, alignItems: "center" }}>
+                      <span style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: t.tipo === "VENDA" ? "#008C3A" : "#ef4444" }}>{t.categoria}</span>
+                      {t.tamanho && <span style={{ fontSize: 10, fontWeight: 700, color: "#444", background: "#1a1a1a", padding: "1px 6px", borderRadius: 4 }}>{t.tamanho}</span>}
+                      <span style={{ fontSize: 10, color: "#333" }}>{fmtData(t.data)}</span>
                     </div>
                   </div>
 
-                  {/* Valores */}
-                  <div className="text-right flex-shrink-0">
-                    <p
-                      className="text-sm font-black font-mono"
-                      style={{ color: t.tipo === "VENDA" ? "#4ade80" : "#f87171" }}
-                    >
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <p style={{ fontSize: 14, fontWeight: 900, fontFamily: "monospace", color: t.tipo === "VENDA" ? "#4ade80" : "#ef4444" }}>
                       {t.tipo === "VENDA" ? "+" : "−"}{fmt(t.valor)}
                     </p>
                     {t.tipo === "VENDA" && (t.frete || 0) > 0 && (
-                      <p className="text-xs font-mono" style={{ color: "#f97316" }}>
-                        frete −{fmt(t.frete)}
-                      </p>
+                      <p style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>frete −{fmt(t.frete)}</p>
                     )}
                     {t.tipo === "VENDA" && (
-                      <p className="text-xs font-mono" style={{ color: "#888" }}>
-                        liq. {fmt(t.valor - (t.frete || 0))}
-                      </p>
+                      <p style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>líq. {fmt(t.valor - (t.frete || 0))}</p>
                     )}
                   </div>
 
-                  {/* Deletar */}
-                  <button
-                    onClick={() => deletar(t.id)}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-xs transition-all flex-shrink-0"
-                    style={{ color: "#2a2a2a" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#f87171")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#2a2a2a")}
-                    title="Remover"
-                  >
+                  <button onClick={() => deletar(t.id)} style={{ width: 28, height: 28, borderRadius: 8, border: "none", background: "transparent", color: "#2a2a2a", cursor: "pointer", fontSize: 12, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#ef4444")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#2a2a2a")}>
                     ✕
                   </button>
                 </div>
@@ -306,35 +182,7 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {modal && (
-        <Modal
-          tipo={modal}
-          onClose={() => setModal(null)}
-          onSalvo={() => { setModal(null); carregar(); }}
-        />
-      )}
-    </div>
-  );
-}
-
-function SummaryCard({
-  label, value, sub, color, glow, destaque,
-}: {
-  label: string; value: string; sub: string; color: string; glow: string; destaque?: boolean;
-}) {
-  return (
-    <div
-      className="rounded-2xl p-4"
-      style={{
-        background: destaque ? `linear-gradient(135deg, ${glow}, transparent)` : "#0d0d0d",
-        border: "1px solid",
-        borderColor: destaque ? color + "33" : "#161616",
-        boxShadow: destaque ? `0 0 30px ${glow}` : undefined,
-      }}
-    >
-      <p className="text-xs uppercase tracking-wider mb-2 truncate" style={{ color: "#444" }}>{label}</p>
-      <p className="text-xl font-black font-mono leading-none" style={{ color }}>{value}</p>
-      <p className="text-xs mt-1.5" style={{ color: "#333" }}>{sub}</p>
+      {modal && <Modal tipo={modal} onClose={() => setModal(null)} onSalvo={() => { setModal(null); carregar(); }} />}
     </div>
   );
 }

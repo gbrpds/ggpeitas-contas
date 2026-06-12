@@ -13,23 +13,19 @@ interface Props {
 export default function ModalEstoque({ onClose, onSalvo }: Props) {
   const [modelo, setModelo] = useState("");
   const [tamanho, setTamanho] = useState("");
-  const [quantidade, setQuantidade] = useState("1");
-  const [precoCusto, setPrecoCusto] = useState("");
+  const [quantidade, setQuantidade] = useState(1);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!modelo || !tamanho || !quantidade) {
-      setErro("Preencha modelo, tamanho e quantidade.");
-      return;
-    }
+    if (!modelo || !tamanho) { setErro("Selecione o modelo e o tamanho."); return; }
     setLoading(true);
     try {
       const res = await fetch("/api/estoque", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ modelo, tamanho, quantidade, preco_custo: precoCusto }),
+        body: JSON.stringify({ modelo, tamanho, quantidade, preco_custo: 0 }),
       });
       if (!res.ok) throw new Error();
       onSalvo();
@@ -42,62 +38,37 @@ export default function ModalEstoque({ onClose, onSalvo }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      style={{ background: "rgba(0,0,0,0.9)", backdropFilter: "blur(4px)" }}
       onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.88)", backdropFilter: "blur(6px)" }}
     >
       <div
-        className="w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl overflow-hidden"
-        style={{
-          background: "#0d0d0d",
-          border: "1px solid #008C3A",
-          boxShadow: "0 0 40px rgba(0,140,58,0.2)",
-        }}
         onClick={(e) => e.stopPropagation()}
+        style={{ width: "100%", maxWidth: 480, background: "#111", borderTop: "2px solid #008C3A", borderLeft: "1px solid #222", borderRight: "1px solid #222", borderRadius: "20px 20px 0 0", overflow: "hidden" }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-4 flex items-center justify-between"
-          style={{
-            background: "linear-gradient(135deg, rgba(0,140,58,0.2) 0%, rgba(0,140,58,0.05) 100%)",
-            borderBottom: "1px solid #1a1a1a",
-          }}
-        >
+        <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #1c1c1c", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-0.5">Estoque</p>
-            <h2 className="text-xl font-black tracking-widest uppercase" style={{ color: "#008C3A" }}>
-              + Entrada de Camisetas
+            <p style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#555", marginBottom: 4 }}>Estoque</p>
+            <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase", color: "#008C3A", margin: 0 }}>
+              Entrada de Camisetas
             </h2>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all text-sm"
-          >
-            ✕
-          </button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#555", fontSize: 18, cursor: "pointer", padding: 4 }}>✕</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <form onSubmit={handleSubmit} style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Modelo */}
           <div>
-            <label className="block text-xs uppercase tracking-wider mb-1.5" style={{ color: "#555" }}>
-              Modelo *
-            </label>
-            <div className="flex flex-col gap-2">
+            <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555", marginBottom: 6 }}>Modelo *</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {MODELOS.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setModelo(m)}
-                  className="w-full py-2.5 rounded-xl text-sm font-bold transition-all text-left px-4"
-                  style={{
-                    background: modelo === m ? "rgba(0,140,58,0.15)" : "#1a1a1a",
-                    color: modelo === m ? "#4ade80" : "#555",
-                    border: "1px solid",
-                    borderColor: modelo === m ? "#008C3A" : "#2a2a2a",
-                  }}
-                >
-                  {modelo === m ? "✓ " : ""}{m}
+                <button key={m} type="button" onClick={() => setModelo(m)} style={{
+                  padding: "11px 14px", borderRadius: 8, textAlign: "left", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                  background: modelo === m ? "rgba(0,140,58,0.12)" : "#1a1a1a",
+                  color: modelo === m ? "#4ade80" : "#666",
+                  border: `1px solid ${modelo === m ? "#008C3A" : "#252525"}`,
+                }}>
+                  {modelo === m ? "✓  " : "   "}{m}
                 </button>
               ))}
             </div>
@@ -105,95 +76,37 @@ export default function ModalEstoque({ onClose, onSalvo }: Props) {
 
           {/* Tamanho */}
           <div>
-            <label className="block text-xs uppercase tracking-wider mb-1.5" style={{ color: "#555" }}>
-              Tamanho *
-            </label>
-            <div className="flex gap-2">
+            <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555", marginBottom: 6 }}>Tamanho *</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
               {TAMANHOS.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTamanho(t)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-black transition-all"
-                  style={{
-                    background: tamanho === t ? "#008C3A" : "#1a1a1a",
-                    color: tamanho === t ? "#fff" : "#555",
-                    border: "1px solid",
-                    borderColor: tamanho === t ? "#008C3A" : "#2a2a2a",
-                  }}
-                >
+                <button key={t} type="button" onClick={() => setTamanho(t)} style={{
+                  padding: "10px 0", borderRadius: 8, fontSize: 13, fontWeight: 900, cursor: "pointer", letterSpacing: "0.1em",
+                  background: tamanho === t ? "#008C3A" : "#1a1a1a",
+                  color: tamanho === t ? "#fff" : "#555",
+                  border: `1px solid ${tamanho === t ? "#008C3A" : "#252525"}`,
+                }}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {/* Quantidade */}
-            <div>
-              <label className="block text-xs uppercase tracking-wider mb-1.5" style={{ color: "#555" }}>
-                Quantidade *
-              </label>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setQuantidade(String(Math.max(1, parseInt(quantidade) - 1)))}
-                  className="w-10 h-10 rounded-xl font-black text-lg flex items-center justify-center flex-shrink-0 transition-all hover:bg-white/10"
-                  style={{ background: "#1a1a1a", color: "#888", border: "1px solid #2a2a2a" }}
-                >
-                  −
-                </button>
-                <input
-                  type="number"
-                  min="1"
-                  value={quantidade}
-                  onChange={(e) => setQuantidade(e.target.value)}
-                  className="flex-1 text-center py-2 rounded-xl text-lg font-black text-white outline-none"
-                  style={{ background: "#1a1a1a", border: "1px solid #2a2a2a" }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setQuantidade(String(parseInt(quantidade) + 1))}
-                  className="w-10 h-10 rounded-xl font-black text-lg flex items-center justify-center flex-shrink-0 transition-all hover:bg-white/10"
-                  style={{ background: "#1a1a1a", color: "#888", border: "1px solid #2a2a2a" }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Preço de custo */}
-            <div>
-              <label className="block text-xs uppercase tracking-wider mb-1.5" style={{ color: "#555" }}>
-                Preço de custo (R$)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={precoCusto}
-                onChange={(e) => setPrecoCusto(e.target.value)}
-                placeholder="0,00"
-                className="w-full px-3 py-2.5 rounded-xl text-sm text-white placeholder-[#444] outline-none"
-                style={{ background: "#1a1a1a", border: "1px solid #2a2a2a" }}
-              />
+          {/* Quantidade */}
+          <div>
+            <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555", marginBottom: 6 }}>Quantidade *</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button type="button" onClick={() => setQuantidade(Math.max(1, quantidade - 1))} style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid #252525", background: "#1a1a1a", color: "#888", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0 }}>−</button>
+              <p style={{ flex: 1, textAlign: "center", fontSize: 32, fontWeight: 900, fontFamily: "monospace", color: "#fff" }}>{quantidade}</p>
+              <button type="button" onClick={() => setQuantidade(quantidade + 1)} style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid #252525", background: "#1a1a1a", color: "#888", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0 }}>+</button>
             </div>
           </div>
 
-          {erro && (
-            <p className="text-red-400 text-xs bg-red-400/10 px-3 py-2 rounded-lg">{erro}</p>
-          )}
+          {erro && <p style={{ fontSize: 12, color: "#ef4444", background: "rgba(239,68,68,0.08)", padding: "8px 12px", borderRadius: 8 }}>{erro}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3.5 rounded-xl font-black tracking-widest uppercase text-sm transition-all disabled:opacity-50 hover:opacity-90 active:scale-[0.98]"
-            style={{
-              background: "linear-gradient(135deg, #009942, #008C3A)",
-              color: "#fff",
-              boxShadow: "0 4px 20px rgba(0,140,58,0.3)",
-            }}
-          >
+          <button type="submit" disabled={loading} style={{
+            width: "100%", padding: "14px", borderRadius: 10, fontSize: 13, fontWeight: 900, letterSpacing: "0.15em", textTransform: "uppercase",
+            border: "none", cursor: "pointer", background: "#008C3A", color: "#fff", opacity: loading ? 0.5 : 1,
+          }}>
             {loading ? "Salvando..." : "Adicionar ao Estoque"}
           </button>
         </form>
