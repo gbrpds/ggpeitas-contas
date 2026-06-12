@@ -45,5 +45,14 @@ export async function POST(req: NextRequest) {
     RETURNING *
   `;
 
+  // Desconta -1 no estoque quando for venda com modelo+tamanho definidos
+  if (tipo === "VENDA" && modelo && tamanho) {
+    await sql`
+      UPDATE estoque
+      SET quantidade = GREATEST(quantidade - 1, 0)
+      WHERE modelo = ${modelo} AND tamanho = ${tamanho}
+    `;
+  }
+
   return NextResponse.json(rows[0], { status: 201 });
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Modal from "./Modal";
 
 interface Transacao {
@@ -87,6 +88,13 @@ export default function Dashboard() {
           </div>
 
           <div className="flex gap-2">
+            <Link
+              href="/estoque"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black tracking-wider uppercase transition-all hover:opacity-90"
+              style={{ background: "#111", color: "#666", border: "1px solid #1a1a1a" }}
+            >
+              👕 Estoque
+            </Link>
             <button
               onClick={() => setModal("VENDA")}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black tracking-wider uppercase transition-all hover:opacity-90 active:scale-95"
