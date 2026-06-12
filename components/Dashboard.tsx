@@ -12,8 +12,6 @@ interface Transacao {
   valor: number;
   frete: number;
   categoria: string;
-  comprador: string | null;
-  modelo: string | null;
   tamanho: string | null;
   data: string;
 }
@@ -21,7 +19,6 @@ interface Transacao {
 function fmt(val: number) {
   return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
-
 function fmtData(d: string) {
   return new Date(d).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
@@ -62,118 +59,120 @@ export default function Dashboard() {
   const lucro = totalBruto - totalFrete - totalSaidas;
 
   return (
-    <div className="min-h-screen" style={{ background: "#0a0a0a" }}>
-      {/* Header */}
-      <header style={{ borderBottom: "1px solid #1c1c1c", background: "#0a0a0a" }}>
-        <div className="max-w-4xl mx-auto px-5 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="GG Peitas" width={36} height={36} className="object-contain" />
+    <div style={{ minHeight: "100vh", background: "#0a0a0a" }}>
+      <header className="header-root">
+        <div className="header-inner page-container">
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            <Image src="/logo.png" alt="GG Peitas" width={34} height={34} className="object-contain" />
             <div>
-              <p style={{ fontSize: 10, letterSpacing: "0.25em", color: "#555", textTransform: "uppercase" }}>GG Peitas</p>
-              <p style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.2em", color: "#F5C400", textTransform: "uppercase", lineHeight: 1 }}>Financeiro</p>
+              <p style={{ fontSize: 9, letterSpacing: "0.25em", color: "#555", textTransform: "uppercase" }}>GG Peitas</p>
+              <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.2em", color: "#F5C400", textTransform: "uppercase", lineHeight: 1 }}>Financeiro</p>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link href="/contatos" style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#555", border: "1px solid #222", background: "transparent", textDecoration: "none" }}>
-              Contatos
+          <div className="header-nav">
+            <Link href="/contatos" className="btn-nav">
+              <span className="btn-nav-label">Contatos</span>
+              <span className="btn-nav-icon" style={{ display: "none" }}>👥</span>
             </Link>
-            <Link href="/estoque" style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#555", border: "1px solid #222", background: "transparent", textDecoration: "none" }}>
-              Estoque
+            <Link href="/estoque" className="btn-nav">
+              <span className="btn-nav-label">Estoque</span>
+              <span className="btn-nav-icon" style={{ display: "none" }}>👕</span>
             </Link>
-            <button onClick={() => setModal("SAIDA")} style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff", border: "1px solid #ef4444", background: "transparent", cursor: "pointer" }}>
-              − Saída
+            <button onClick={() => setModal("SAIDA")} className="btn-danger">
+              <span className="btn-nav-label">− Saída</span>
+              <span className="btn-nav-icon" style={{ display: "none" }}>−</span>
             </button>
-            <button onClick={() => setModal("VENDA")} style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff", background: "#008C3A", border: "none", cursor: "pointer" }}>
-              + Venda
+            <button onClick={() => setModal("VENDA")} className="btn-primary">
+              <span className="btn-nav-label">+ Venda</span>
+              <span className="btn-nav-icon" style={{ display: "none" }}>+</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-5 py-8" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        {/* Resumo */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+      <main className="page-container" style={{ paddingTop: 28, paddingBottom: 40, display: "flex", flexDirection: "column", gap: 20 }}>
+        {/* Cards */}
+        <div className="summary-grid">
           {[
             { label: "Vendas brutas", value: fmt(totalBruto), color: "#fff" },
             { label: "Frete enviado", value: fmt(totalFrete), color: "#888" },
             { label: "Saídas", value: fmt(totalSaidas), color: "#ef4444" },
             { label: "Lucro líquido", value: fmt(lucro), color: lucro >= 0 ? "#F5C400" : "#ef4444" },
           ].map((c) => (
-            <div key={c.label} style={{ background: "#111", border: "1px solid #1c1c1c", borderRadius: 12, padding: "14px 16px" }}>
-              <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#444", marginBottom: 6 }}>{c.label}</p>
-              <p style={{ fontSize: 18, fontWeight: 900, fontFamily: "monospace", color: c.color, letterSpacing: "-0.02em" }}>{c.value}</p>
+            <div key={c.label} className="summary-card">
+              <p>{c.label}</p>
+              <p className="summary-value" style={{ color: c.color }}>{c.value}</p>
             </div>
           ))}
         </div>
 
         {/* Filtros */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="filters-row">
           <div style={{ display: "flex", border: "1px solid #1c1c1c", borderRadius: 10, overflow: "hidden" }}>
             {(["TODOS", "VENDA", "SAIDA"] as const).map((t) => {
               const active = filtroTipo === t;
               return (
                 <button key={t} onClick={() => setFiltroTipo(t)} style={{
-                  padding: "7px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", border: "none",
+                  padding: "7px 12px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                  textTransform: "uppercase", cursor: "pointer", border: "none",
                   background: active ? (t === "VENDA" ? "#008C3A" : t === "SAIDA" ? "#ef4444" : "#fff") : "#111",
-                  color: active ? (t === "TODOS" ? "#000" : "#fff") : "#444",
+                  color: active ? (t === "TODOS" ? "#000" : "#fff") : "#555",
                 }}>
                   {t === "TODOS" ? "Todos" : t === "VENDA" ? "Vendas" : "Saídas"}
                 </button>
               );
             })}
           </div>
-          <select value={mes} onChange={(e) => setMes(e.target.value)} style={{ padding: "7px 12px", borderRadius: 10, fontSize: 11, fontWeight: 700, color: mes ? "#fff" : "#444", background: "#111", border: "1px solid #1c1c1c", letterSpacing: "0.1em", colorScheme: "dark", cursor: "pointer" }}>
+          <select value={mes} onChange={(e) => setMes(e.target.value)} style={{
+            padding: "7px 10px", borderRadius: 10, fontSize: 11, fontWeight: 700,
+            color: mes ? "#fff" : "#777", background: "#111", border: "1px solid #1c1c1c",
+            colorScheme: "dark", cursor: "pointer", maxWidth: 160,
+          }}>
             <option value="">Todos os meses</option>
             {getMeses().map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
         </div>
 
-        {/* Tabela */}
-        <div style={{ border: "1px solid #1c1c1c", borderRadius: 12, overflow: "hidden" }}>
-          <div style={{ background: "#111", borderBottom: "1px solid #1c1c1c", padding: "10px 18px" }}>
+        {/* Lista */}
+        <div className="table-container">
+          <div className="table-header">
             <p style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: "#444" }}>
               Histórico · {transacoes.length} registro{transacoes.length !== 1 ? "s" : ""}
             </p>
           </div>
-
           {loading ? (
-            <div style={{ padding: "60px 20px", textAlign: "center", background: "#0d0d0d" }}>
+            <div className="table-body" style={{ padding: "50px 20px", textAlign: "center" }}>
               <p style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#333" }}>Carregando...</p>
             </div>
           ) : transacoes.length === 0 ? (
-            <div style={{ padding: "60px 20px", textAlign: "center", background: "#0d0d0d" }}>
+            <div className="table-body" style={{ padding: "50px 20px", textAlign: "center" }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: "#333" }}>Nenhuma transação ainda</p>
             </div>
           ) : (
-            <div style={{ background: "#0d0d0d" }}>
-              {transacoes.map((t, i) => (
-                <div key={t.id} style={{
-                  display: "flex", alignItems: "center", gap: 14, padding: "12px 18px",
-                  borderBottom: i < transacoes.length - 1 ? "1px solid #141414" : undefined,
-                  opacity: deletando === t.id ? 0.3 : 1,
-                }}>
+            <div className="table-body">
+              {transacoes.map((t) => (
+                <div key={t.id} className="table-row" style={{ opacity: deletando === t.id ? 0.3 : 1 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.descricao}</p>
-                    <div style={{ display: "flex", gap: 8, marginTop: 3, alignItems: "center" }}>
-                      <span style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: t.tipo === "VENDA" ? "#008C3A" : "#ef4444" }}>{t.categoria}</span>
-                      {t.tamanho && <span style={{ fontSize: 10, fontWeight: 700, color: "#444", background: "#1a1a1a", padding: "1px 6px", borderRadius: 4 }}>{t.tamanho}</span>}
-                      <span style={{ fontSize: 10, color: "#333" }}>{fmtData(t.data)}</span>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.descricao}</p>
+                    <div style={{ display: "flex", gap: 8, marginTop: 3, alignItems: "center", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: t.tipo === "VENDA" ? "#008C3A" : "#ef4444" }}>{t.categoria}</span>
+                      {t.tamanho && <span style={{ fontSize: 10, fontWeight: 700, color: "#444", background: "#1a1a1a", padding: "1px 5px", borderRadius: 4 }}>{t.tamanho}</span>}
+                      <span className="hide-mobile" style={{ fontSize: 10, color: "#333" }}>{fmtData(t.data)}</span>
                     </div>
                   </div>
-
                   <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <p style={{ fontSize: 14, fontWeight: 900, fontFamily: "monospace", color: t.tipo === "VENDA" ? "#4ade80" : "#ef4444" }}>
+                    <p style={{ fontSize: 13, fontWeight: 900, fontFamily: "monospace", color: t.tipo === "VENDA" ? "#4ade80" : "#ef4444", whiteSpace: "nowrap" }}>
                       {t.tipo === "VENDA" ? "+" : "−"}{fmt(t.valor)}
                     </p>
                     {t.tipo === "VENDA" && (t.frete || 0) > 0 && (
-                      <p style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>frete −{fmt(t.frete)}</p>
+                      <p className="hide-mobile" style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>frete −{fmt(t.frete)}</p>
                     )}
                     {t.tipo === "VENDA" && (
-                      <p style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>líq. {fmt(t.valor - (t.frete || 0))}</p>
+                      <p className="hide-mobile" style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>líq. {fmt(t.valor - (t.frete || 0))}</p>
                     )}
                   </div>
-
-                  <button onClick={() => deletar(t.id)} style={{ width: 28, height: 28, borderRadius: 8, border: "none", background: "transparent", color: "#2a2a2a", cursor: "pointer", fontSize: 12, flexShrink: 0 }}
+                  <button onClick={() => deletar(t.id)}
+                    style={{ width: 28, height: 28, borderRadius: 8, border: "none", background: "transparent", color: "#2a2a2a", cursor: "pointer", fontSize: 12, flexShrink: 0 }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = "#ef4444")}
                     onMouseLeave={(e) => (e.currentTarget.style.color = "#2a2a2a")}>
                     ✕

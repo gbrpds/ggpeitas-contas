@@ -96,14 +96,8 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
   const accent = isVenda ? "#008C3A" : "#ef4444";
 
   return (
-    <div
-      onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.88)", backdropFilter: "blur(6px)" }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: 480, background: "#111", borderTop: `2px solid ${accent}`, borderLeft: "1px solid #222", borderRight: "1px solid #222", borderRadius: "20px 20px 0 0", overflow: "hidden", maxHeight: "92vh", overflowY: "auto" }}
-      >
+    <div onClick={onClose} className="modal-overlay">
+      <div onClick={(e) => e.stopPropagation()} className="modal-sheet" style={{ borderTop: `2px solid ${accent}` }}>
         {/* Header */}
         <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #1c1c1c", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
