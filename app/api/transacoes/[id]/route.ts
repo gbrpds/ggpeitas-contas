@@ -6,6 +6,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await sql(`DELETE FROM transacoes WHERE id = $1`, [id]);
+  await sql`DELETE FROM transacoes WHERE id = ${id}`;
   return NextResponse.json({ ok: true });
 }
