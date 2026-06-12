@@ -26,13 +26,13 @@ export default function Header({ onVenda, onSaida, onEntrada }: Props) {
     <header className="header-root">
       <div className="header-inner page-container">
         {/* Logo + título */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, textDecoration: "none" }}>
           <Image src="/logo.png" alt="GG Peitas" width={34} height={34} className="object-contain" />
           <div>
             <p style={{ fontSize: 9, letterSpacing: "0.25em", color: "#555", textTransform: "uppercase" }}>GG Peitas</p>
             <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.2em", color: "#F5C400", textTransform: "uppercase", lineHeight: 1 }}>{titulo}</p>
           </div>
-        </div>
+        </Link>
 
         {/* Ações */}
         <div className="header-nav">
