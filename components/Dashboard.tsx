@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import Header from "./Header";
 import Modal from "./Modal";
 
 interface Transacao {
@@ -30,7 +29,6 @@ export default function Dashboard() {
   const [mes, setMes] = useState("");
   const [deletando, setDeletando] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [menuAberto, setMenuAberto] = useState(false);
 
   const carregar = useCallback(async () => {
     setLoading(true);
@@ -61,49 +59,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a" }}>
-      <header className="header-root">
-        <div className="header-inner page-container">
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-            <Image src="/logo.png" alt="GG Peitas" width={34} height={34} className="object-contain" />
-            <div>
-              <p style={{ fontSize: 9, letterSpacing: "0.25em", color: "#555", textTransform: "uppercase" }}>GG Peitas</p>
-              <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.2em", color: "#F5C400", textTransform: "uppercase", lineHeight: 1 }}>Financeiro</p>
-            </div>
-          </div>
-          <div className="header-nav">
-            {/* Menu dropdown para navegação */}
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => setMenuAberto(!menuAberto)}
-                className="btn-nav"
-                style={{ display: "flex", alignItems: "center", gap: 6 }}
-              >
-                ☰ <span className="hide-mobile">Menu</span>
-              </button>
-              {menuAberto && (
-                <>
-                  {/* overlay para fechar */}
-                  <div onClick={() => setMenuAberto(false)} style={{ position: "fixed", inset: 0, zIndex: 10 }} />
-                  <div style={{
-                    position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 20,
-                    background: "#161616", border: "1px solid #252525", borderRadius: 12,
-                    padding: 6, minWidth: 160, display: "flex", flexDirection: "column", gap: 2,
-                  }}>
-                    <Link href="/estoque" onClick={() => setMenuAberto(false)} style={{ padding: "10px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700, color: "#ccc", textDecoration: "none", display: "block", letterSpacing: "0.05em" }}>
-                      👕 Estoque
-                    </Link>
-                    <Link href="/contatos" onClick={() => setMenuAberto(false)} style={{ padding: "10px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700, color: "#ccc", textDecoration: "none", display: "block", letterSpacing: "0.05em" }}>
-                      👥 Contatos
-                    </Link>
-                  </div>
-                </>
-              )}
-            </div>
-            <button onClick={() => setModal("SAIDA")} className="btn-danger">− Saída</button>
-            <button onClick={() => setModal("VENDA")} className="btn-primary">+ Venda</button>
-          </div>
-        </div>
-      </header>
+      <Header onVenda={() => setModal("VENDA")} onSaida={() => setModal("SAIDA")} />
 
       <main className="page-container" style={{ paddingTop: 28, paddingBottom: 40, display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Cards */}

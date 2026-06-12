@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import Header from "./Header";
 
 interface Contato {
   comprador: string;
@@ -45,20 +44,7 @@ export default function Contatos() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a" }}>
-      <header className="header-root">
-        <div className="header-inner page-container">
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-            <Image src="/logo.png" alt="GG Peitas" width={34} height={34} className="object-contain" />
-            <div>
-              <p style={{ fontSize: 9, letterSpacing: "0.25em", color: "#555", textTransform: "uppercase" }}>GG Peitas</p>
-              <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.2em", color: "#F5C400", textTransform: "uppercase", lineHeight: 1 }}>Contatos</p>
-            </div>
-          </div>
-          <div className="header-nav">
-            <Link href="/" className="btn-nav">← Financeiro</Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="page-container" style={{ paddingTop: 28, paddingBottom: 40, display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="summary-grid-2">
