@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [mes, setMes] = useState("");
   const [deletando, setDeletando] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [menuAberto, setMenuAberto] = useState(false);
 
   const carregar = useCallback(async () => {
     setLoading(true);
@@ -70,8 +71,34 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="header-nav">
-            <Link href="/contatos" className="btn-nav hide-mobile">Contatos</Link>
-            <Link href="/estoque" className="btn-nav">Estoque</Link>
+            {/* Menu dropdown para navegação */}
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setMenuAberto(!menuAberto)}
+                className="btn-nav"
+                style={{ display: "flex", alignItems: "center", gap: 6 }}
+              >
+                ☰ <span className="hide-mobile">Menu</span>
+              </button>
+              {menuAberto && (
+                <>
+                  {/* overlay para fechar */}
+                  <div onClick={() => setMenuAberto(false)} style={{ position: "fixed", inset: 0, zIndex: 10 }} />
+                  <div style={{
+                    position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 20,
+                    background: "#161616", border: "1px solid #252525", borderRadius: 12,
+                    padding: 6, minWidth: 160, display: "flex", flexDirection: "column", gap: 2,
+                  }}>
+                    <Link href="/estoque" onClick={() => setMenuAberto(false)} style={{ padding: "10px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700, color: "#ccc", textDecoration: "none", display: "block", letterSpacing: "0.05em" }}>
+                      👕 Estoque
+                    </Link>
+                    <Link href="/contatos" onClick={() => setMenuAberto(false)} style={{ padding: "10px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700, color: "#ccc", textDecoration: "none", display: "block", letterSpacing: "0.05em" }}>
+                      👥 Contatos
+                    </Link>
+                  </div>
+                </>
+              )}
+            </div>
             <button onClick={() => setModal("SAIDA")} className="btn-danger">− Saída</button>
             <button onClick={() => setModal("VENDA")} className="btn-primary">+ Venda</button>
           </div>
