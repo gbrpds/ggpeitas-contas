@@ -45,9 +45,9 @@ export default function Estoque() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a" }}>
-      <Header onEntrada={() => setModal(true)} />
+      <Header />
 
-      <main className="page-container" style={{ paddingTop: 28, paddingBottom: 40, display: "flex", flexDirection: "column", gap: 20 }}>
+      <main className="page-container" style={{ paddingTop: 28, paddingBottom: 100, display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="summary-grid-2">
           <div className="summary-card">
             <p>Total em estoque</p>
@@ -124,6 +124,16 @@ export default function Estoque() {
           })
         )}
       </main>
+
+      {/* FAB */}
+      <div style={{ position: "fixed", bottom: 24, right: 20, zIndex: 30 }}>
+        <button onClick={() => setModal(true)} style={{
+          padding: "13px 22px", borderRadius: 14, fontSize: 13, fontWeight: 900,
+          letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
+          color: "#fff", background: "#008C3A", border: "none",
+          boxShadow: "0 4px 20px rgba(0,140,58,0.35)",
+        }}>+ Entrada</button>
+      </div>
 
       {modal && <ModalEstoque onClose={() => setModal(false)} onSalvo={() => { setModal(false); carregar(); }} />}
     </div>

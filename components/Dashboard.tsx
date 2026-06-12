@@ -59,9 +59,9 @@ export default function Dashboard() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a" }}>
-      <Header onVenda={() => setModal("VENDA")} onSaida={() => setModal("SAIDA")} />
+      <Header />
 
-      <main className="page-container" style={{ paddingTop: 28, paddingBottom: 40, display: "flex", flexDirection: "column", gap: 20 }}>
+      <main className="page-container" style={{ paddingTop: 28, paddingBottom: 100, display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Cards */}
         <div className="summary-grid">
           {[
@@ -154,6 +154,22 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+
+      {/* FABs */}
+      <div style={{ position: "fixed", bottom: 24, right: 20, display: "flex", flexDirection: "column", gap: 10, zIndex: 30 }}>
+        <button onClick={() => setModal("SAIDA")} style={{
+          padding: "13px 22px", borderRadius: 14, fontSize: 13, fontWeight: 900,
+          letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
+          color: "#fff", border: "1px solid #ef4444", background: "#0a0a0a",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+        }}>− Saída</button>
+        <button onClick={() => setModal("VENDA")} style={{
+          padding: "13px 22px", borderRadius: 14, fontSize: 13, fontWeight: 900,
+          letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
+          color: "#fff", background: "#008C3A", border: "none",
+          boxShadow: "0 4px 20px rgba(0,140,58,0.35)",
+        }}>+ Venda</button>
+      </div>
 
       {modal && <Modal tipo={modal} onClose={() => setModal(null)} onSalvo={() => { setModal(null); carregar(); }} />}
     </div>

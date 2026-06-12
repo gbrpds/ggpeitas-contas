@@ -11,13 +11,7 @@ const PAGES: Record<string, string> = {
   "/contatos": "Contatos",
 };
 
-interface Props {
-  onVenda?: () => void;
-  onSaida?: () => void;
-  onEntrada?: () => void;
-}
-
-export default function Header({ onVenda, onSaida, onEntrada }: Props) {
+export default function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
   const pathname = usePathname();
   const titulo = PAGES[pathname] ?? "GG Peitas";
@@ -71,16 +65,6 @@ export default function Header({ onVenda, onSaida, onEntrada }: Props) {
             )}
           </div>
 
-          {/* Botões contextuais por página */}
-          {onSaida && (
-            <button onClick={onSaida} className="btn-danger">− Saída</button>
-          )}
-          {onVenda && (
-            <button onClick={onVenda} className="btn-primary">+ Venda</button>
-          )}
-          {onEntrada && (
-            <button onClick={onEntrada} className="btn-primary">+ Entrada</button>
-          )}
         </div>
       </div>
     </header>
