@@ -28,3 +28,12 @@ body {
   background: #333;
   border-radius: 3px;
 }
+
+input::placeholder,
+textarea::placeholder {
+  color: #777;
+}
+
+select option[value=""] {
+  color: #aaa;
+}

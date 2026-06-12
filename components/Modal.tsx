@@ -135,7 +135,7 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <Field label="Modelo *">
-                  <select value={modelo} onChange={(e) => setModelo(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" }}>
+                  <select value={modelo} onChange={(e) => setModelo(e.target.value)} style={{ ...inputStyle, colorScheme: "dark", color: modelo ? "#fff" : "#aaa" }}>
                     <option value="">Selecione...</option>
                     {MODELOS.map((m) => <option key={m} value={m}>{m}</option>)}
                   </select>
@@ -146,7 +146,7 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
                       <button key={t} type="button" onClick={() => setTamanho(t)} style={{
                         padding: "9px 0", borderRadius: 8, fontSize: 12, fontWeight: 900, cursor: "pointer",
                         background: tamanho === t ? "#008C3A" : "#1a1a1a",
-                        color: tamanho === t ? "#fff" : "#555",
+                        color: tamanho === t ? "#fff" : "#aaa",
                         border: `1px solid ${tamanho === t ? "#008C3A" : "#252525"}`,
                       }}>
                         {t}
@@ -197,7 +197,7 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
                     <button key={c} type="button" onClick={() => setCategoria(c)} style={{
                       padding: "7px 14px", borderRadius: 8, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer",
                       background: categoria === c ? "#ef4444" : "#1a1a1a",
-                      color: categoria === c ? "#fff" : "#555",
+                      color: categoria === c ? "#fff" : "#aaa",
                       border: `1px solid ${categoria === c ? "#ef4444" : "#252525"}`,
                     }}>
                       {c}
