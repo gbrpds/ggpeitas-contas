@@ -100,10 +100,10 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
         style={{
           background: "#0d0d0d",
           border: "1px solid",
-          borderColor: isVenda ? "#008C3A" : "#F5C400",
+          borderColor: isVenda ? "#008C3A" : "#ef4444",
           boxShadow: isVenda
             ? "0 0 40px rgba(0,140,58,0.2)"
-            : "0 0 40px rgba(245,196,0,0.15)",
+            : "0 0 40px rgba(239,68,68,0.2)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -113,7 +113,7 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
           style={{
             background: isVenda
               ? "linear-gradient(135deg, rgba(0,140,58,0.2) 0%, rgba(0,140,58,0.05) 100%)"
-              : "linear-gradient(135deg, rgba(245,196,0,0.15) 0%, rgba(245,196,0,0.03) 100%)",
+              : "linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(239,68,68,0.03) 100%)",
             borderBottom: "1px solid #1a1a1a",
           }}
         >
@@ -123,7 +123,7 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
             </p>
             <h2
               className="text-xl font-black tracking-widest uppercase"
-              style={{ color: isVenda ? "#008C3A" : "#F5C400" }}
+              style={{ color: isVenda ? "#008C3A" : "#ef4444" }}
             >
               {isVenda ? "⚽ Venda de Camiseta" : "↓ Saída / Investimento"}
             </h2>
@@ -275,10 +275,10 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
                       onClick={() => setCategoria(c)}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
                       style={{
-                        background: categoria === c ? "#F5C400" : "#1a1a1a",
-                        color: categoria === c ? "#050505" : "#666",
+                        background: categoria === c ? "#ef4444" : "#1a1a1a",
+                        color: categoria === c ? "#fff" : "#666",
                         border: "1px solid",
-                        borderColor: categoria === c ? "#F5C400" : "#2a2a2a",
+                        borderColor: categoria === c ? "#ef4444" : "#2a2a2a",
                       }}
                     >
                       {c}
@@ -300,11 +300,11 @@ export default function Modal({ tipo, onClose, onSalvo }: Props) {
             style={{
               background: isVenda
                 ? "linear-gradient(135deg, #009942, #008C3A)"
-                : "linear-gradient(135deg, #F5C400, #e0b300)",
-              color: isVenda ? "#fff" : "#050505",
+                : "linear-gradient(135deg, #ef4444, #dc2626)",
+              color: "#fff",
               boxShadow: isVenda
                 ? "0 4px 20px rgba(0,140,58,0.3)"
-                : "0 4px 20px rgba(245,196,0,0.2)",
+                : "0 4px 20px rgba(239,68,68,0.3)",
             }}
           >
             {loading ? "Salvando..." : `Registrar ${isVenda ? "Venda" : "Saída"}`}
