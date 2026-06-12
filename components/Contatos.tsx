@@ -75,11 +75,12 @@ export default function Contatos() {
             padding: "9px 18px", borderRadius: 10, fontSize: 11, fontWeight: 700,
             letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
             color: copiado ? "#000" : "#fff",
-            background: copiado ? "#F5C400" : "#1a1a1a",
-            border: `1px solid ${copiado ? "#F5C400" : "#252525"}`,
+            background: copiado ? "#F5C400" : "#008C3A",
+            border: "none",
             transition: "all 0.2s",
+            opacity: contatos.filter(c => c.email).length === 0 ? 0.3 : 1,
           }}>
-            {copiado ? "✓ Copiado!" : `✉ Copiar ${contatos.filter(c => c.email).length} emails`}
+            {copiado ? "✓ Copiado!" : `✉ Copiar emails`}
           </button>
         </div>
 
