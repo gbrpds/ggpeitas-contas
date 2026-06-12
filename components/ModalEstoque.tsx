@@ -60,18 +60,10 @@ export default function ModalEstoque({ onClose, onSalvo }: Props) {
           {/* Modelo */}
           <div>
             <p style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555", marginBottom: 6 }}>Modelo *</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {MODELOS.map((m) => (
-                <button key={m} type="button" onClick={() => setModelo(m)} style={{
-                  padding: "11px 14px", borderRadius: 8, textAlign: "left", fontSize: 13, fontWeight: 700, cursor: "pointer",
-                  background: modelo === m ? "rgba(0,140,58,0.12)" : "#1a1a1a",
-                  color: modelo === m ? "#4ade80" : "#666",
-                  border: `1px solid ${modelo === m ? "#008C3A" : "#252525"}`,
-                }}>
-                  {modelo === m ? "✓  " : "   "}{m}
-                </button>
-              ))}
-            </div>
+            <select value={modelo} onChange={(e) => setModelo(e.target.value)} style={{ width: "100%", padding: "10px 14px", borderRadius: 8, background: "#1a1a1a", border: "1px solid #252525", color: modelo ? "#fff" : "#555", fontSize: 13, outline: "none", colorScheme: "dark" }}>
+              <option value="">Selecione...</option>
+              {MODELOS.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
           </div>
 
           {/* Tamanho */}
