@@ -7,18 +7,17 @@ export async function GET(req: NextRequest) {
   const mes = searchParams.get("mes");
 
   let rows;
-
   if (tipo && mes) {
-    const [year, month] = mes.split("-").map(Number);
-    const ini = new Date(year, month - 1, 1).toISOString();
-    const fim = new Date(year, month, 1).toISOString();
+    const [y, m] = mes.split("-").map(Number);
+    const ini = new Date(y, m - 1, 1).toISOString();
+    const fim = new Date(y, m, 1).toISOString();
     rows = await sql`SELECT * FROM transacoes WHERE tipo = ${tipo} AND data >= ${ini} AND data < ${fim} ORDER BY data DESC`;
   } else if (tipo) {
     rows = await sql`SELECT * FROM transacoes WHERE tipo = ${tipo} ORDER BY data DESC`;
   } else if (mes) {
-    const [year, month] = mes.split("-").map(Number);
-    const ini = new Date(year, month - 1, 1).toISOString();
-    const fim = new Date(year, month, 1).toISOString();
+    const [y, m] = mes.split("-").map(Number);
+    const ini = new Date(y, m - 1, 1).toISOString();
+    const fim = new Date(y, m, 1).toISOString();
     rows = await sql`SELECT * FROM transacoes WHERE data >= ${ini} AND data < ${fim} ORDER BY data DESC`;
   } else {
     rows = await sql`SELECT * FROM transacoes ORDER BY data DESC`;
@@ -28,28 +27,42 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { tipo, descricao, valor, categoria, data, comprador, modelo, tamanho, frete } = await req.json();
+  const { tipo, descricao, valor, categoria, data, comprador, email, telefone, modelo, tamanho, frete } = await req.json();
 
   if (!tipo || !descricao || !valor || !categoria) {
     return NextResponse.json({ error: "Campos obrigatórios faltando" }, { status: 400 });
   }
 
+  // Valida estoque antes de registrar venda
+  if (tipo === "VENDA" && modelo && tamanho) {
+    const estoque = await sql`
+      SELECT quantidade FROM estoque WHERE modelo = ${modelo} AND tamanho = ${tamanho}
+    `;
+    if (estoque.length === 0 || estoque[0].quantidade <= 0) {
+      return NextResponse.json(
+        { error: `Sem estoque disponível para ${modelo} tamanho ${tamanho}.` },
+        { status: 400 }
+      );
+    }
+  }
+
   const id = crypto.randomUUID();
   const dataFinal = data ? new Date(data).toISOString() : new Date().toISOString();
-  const freteVal = parseFloat(frete ?? 0);
-  const valorVal = parseFloat(valor);
 
   const rows = await sql`
-    INSERT INTO transacoes (id, tipo, descricao, valor, categoria, data, "createdAt", comprador, modelo, tamanho, frete)
-    VALUES (${id}, ${tipo}, ${descricao}, ${valorVal}, ${categoria}, ${dataFinal}, ${new Date().toISOString()}, ${comprador ?? null}, ${modelo ?? null}, ${tamanho ?? null}, ${freteVal})
+    INSERT INTO transacoes (id, tipo, descricao, valor, categoria, data, "createdAt", comprador, email, telefone, modelo, tamanho, frete)
+    VALUES (
+      ${id}, ${tipo}, ${descricao}, ${parseFloat(valor)}, ${categoria}, ${dataFinal},
+      ${new Date().toISOString()}, ${comprador ?? null}, ${email ?? null}, ${telefone ?? null},
+      ${modelo ?? null}, ${tamanho ?? null}, ${parseFloat(frete) || 0}
+    )
     RETURNING *
   `;
 
-  // Desconta -1 no estoque quando for venda com modelo+tamanho definidos
+  // Desconta estoque
   if (tipo === "VENDA" && modelo && tamanho) {
     await sql`
-      UPDATE estoque
-      SET quantidade = GREATEST(quantidade - 1, 0)
+      UPDATE estoque SET quantidade = quantidade - 1
       WHERE modelo = ${modelo} AND tamanho = ${tamanho}
     `;
   }

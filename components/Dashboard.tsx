@@ -74,6 +74,9 @@ export default function Dashboard() {
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
+            <Link href="/contatos" style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#555", border: "1px solid #222", background: "transparent", textDecoration: "none" }}>
+              Contatos
+            </Link>
             <Link href="/estoque" style={{ padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#555", border: "1px solid #222", background: "transparent", textDecoration: "none" }}>
               Estoque
             </Link>
