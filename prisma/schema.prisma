@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Transacao {
+  id        String   @id @default(cuid())
+  tipo      Tipo
+  descricao String
+  valor     Float
+  categoria String
+  data      DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@map("transacoes")
+}
+
+enum Tipo {
+  VENDA
+  SAIDA
+}
