@@ -80,7 +80,7 @@ export default function Contatos() {
             transition: "all 0.2s",
             opacity: contatos.filter(c => c.email).length === 0 ? 0.3 : 1,
           }}>
-            {copiado ? "✓ Copiado!" : `✉ Copiar emails`}
+            {copiado ? "Copiado!" : "Copiar emails"}
           </button>
         </div>
 
