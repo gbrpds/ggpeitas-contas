@@ -159,7 +159,8 @@ textarea::placeholder { color: #777; }
 }
 
 /* ── Row detail: hide on mobile ── */
-.hide-mobile { display: block; }
+.hide-mobile { display: revert; }
+.show-mobile-only { display: none; }
 
 /* ── Contact row ── */
 .contact-meta {
@@ -229,6 +230,7 @@ textarea::placeholder { color: #777; }
   .summary-value { font-size: 15px; }
 
   .hide-mobile { display: none; }
+  .show-mobile-only { display: flex; }
 
   .table-row { padding: 11px 14px; gap: 10px; }
 

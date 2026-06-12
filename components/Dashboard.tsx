@@ -78,7 +78,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filtros */}
-        <div className="filters-row">
+        <div className="filters-row" style={{ justifyContent: "space-between" }}>
           <div style={{ display: "flex", border: "1px solid #1c1c1c", borderRadius: 10, overflow: "hidden" }}>
             {(["TODOS", "VENDA", "SAIDA"] as const).map((t) => {
               const active = filtroTipo === t;
@@ -102,6 +102,20 @@ export default function Dashboard() {
             <option value="">Todos os meses</option>
             {getMeses().map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
+
+          {/* Botões de ação — visíveis só no desktop */}
+          <div className="hide-mobile" style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+            <button onClick={() => setModal("SAIDA")} style={{
+              padding: "7px 16px", borderRadius: 10, fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer",
+              color: "#fff", border: "1px solid #ef4444", background: "transparent",
+            }}>− Saída</button>
+            <button onClick={() => setModal("VENDA")} style={{
+              padding: "7px 16px", borderRadius: 10, fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer",
+              color: "#fff", background: "#008C3A", border: "none",
+            }}>+ Venda</button>
+          </div>
         </div>
 
         {/* Lista */}
@@ -155,8 +169,8 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* FABs */}
-      <div style={{ position: "fixed", bottom: 24, right: 20, display: "flex", flexDirection: "column", gap: 10, zIndex: 30 }}>
+      {/* FABs — apenas no mobile */}
+      <div className="show-mobile-only" style={{ position: "fixed", bottom: 24, right: 20, flexDirection: "column", gap: 10, zIndex: 30 }}>
         <button onClick={() => setModal("SAIDA")} style={{
           padding: "13px 22px", borderRadius: 14, fontSize: 13, fontWeight: 900,
           letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",

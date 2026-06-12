@@ -25,6 +25,7 @@ export default function Contatos() {
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState<Contato | null>(null);
+  const [copiado, setCopiado] = useState(false);
 
   const carregar = useCallback(async () => {
     setLoading(true);
@@ -34,6 +35,13 @@ export default function Contatos() {
   }, []);
 
   useEffect(() => { carregar(); }, [carregar]);
+
+  function copiarEmails() {
+    const emails = contatos.filter(c => c.email).map(c => c.email).join(", ");
+    navigator.clipboard.writeText(emails);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2500);
+  }
 
   const lista = busca
     ? contatos.filter(c =>
@@ -60,6 +68,19 @@ export default function Contatos() {
             </p>
             <p className="summary-sub">têm email ou telefone</p>
           </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <button onClick={copiarEmails} disabled={contatos.filter(c => c.email).length === 0} style={{
+            padding: "9px 18px", borderRadius: 10, fontSize: 11, fontWeight: 700,
+            letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
+            color: copiado ? "#000" : "#fff",
+            background: copiado ? "#F5C400" : "#1a1a1a",
+            border: `1px solid ${copiado ? "#F5C400" : "#252525"}`,
+            transition: "all 0.2s",
+          }}>
+            {copiado ? "✓ Copiado!" : `✉ Copiar ${contatos.filter(c => c.email).length} emails`}
+          </button>
         </div>
 
         <input
