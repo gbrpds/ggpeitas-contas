@@ -216,8 +216,11 @@ textarea::placeholder { color: #777; }
 
   .header-inner { padding: 10px 14px; }
 
-  .btn-nav-label { display: none; }
-  .btn-nav-icon { display: inline; }
+  .btn-nav { padding: 7px 10px; font-size: 11px; }
+  .btn-primary { padding: 7px 10px; font-size: 11px; }
+  .btn-danger { padding: 7px 10px; font-size: 11px; }
+
+  .hide-desktop-label { display: none; }
 
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);

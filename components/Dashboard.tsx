@@ -70,22 +70,10 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="header-nav">
-            <Link href="/contatos" className="btn-nav">
-              <span className="btn-nav-label">Contatos</span>
-              <span className="btn-nav-icon" style={{ display: "none" }}>👥</span>
-            </Link>
-            <Link href="/estoque" className="btn-nav">
-              <span className="btn-nav-label">Estoque</span>
-              <span className="btn-nav-icon" style={{ display: "none" }}>👕</span>
-            </Link>
-            <button onClick={() => setModal("SAIDA")} className="btn-danger">
-              <span className="btn-nav-label">− Saída</span>
-              <span className="btn-nav-icon" style={{ display: "none" }}>−</span>
-            </button>
-            <button onClick={() => setModal("VENDA")} className="btn-primary">
-              <span className="btn-nav-label">+ Venda</span>
-              <span className="btn-nav-icon" style={{ display: "none" }}>+</span>
-            </button>
+            <Link href="/contatos" className="btn-nav hide-mobile">Contatos</Link>
+            <Link href="/estoque" className="btn-nav">Estoque</Link>
+            <button onClick={() => setModal("SAIDA")} className="btn-danger">− Saída</button>
+            <button onClick={() => setModal("VENDA")} className="btn-primary">+ Venda</button>
           </div>
         </div>
       </header>
