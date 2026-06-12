@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import Modal from "./Modal";
 
 interface Transacao {
@@ -74,12 +75,7 @@ export default function Dashboard() {
       >
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black"
-              style={{ background: "linear-gradient(135deg, #008C3A, #005c26)" }}
-            >
-              GG
-            </div>
+            <Image src="/logo.png" alt="GG Peitas" width={40} height={40} className="object-contain" />
             <div>
               <p className="text-xs uppercase tracking-[0.3em]" style={{ color: "#444" }}>
                 GG Peitas
