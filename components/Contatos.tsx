@@ -206,8 +206,8 @@ function ModalEditar({ contato, onClose, onSalvo }: { contato: Contato; onClose:
   };
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.88)", backdropFilter: "blur(6px)" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: "#111", borderTop: "2px solid #F5C400", borderLeft: "1px solid #222", borderRight: "1px solid #222", borderRadius: "20px 20px 0 0", overflow: "hidden" }}>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(6px)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 440, background: "#111", border: "1px solid #222", borderTop: "2px solid #F5C400", borderRadius: 16, overflow: "hidden" }}>
         <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #1c1c1c", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
             <p style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#555", marginBottom: 4 }}>Editar Contato</p>
