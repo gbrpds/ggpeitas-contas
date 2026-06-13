@@ -150,10 +150,10 @@ export default function Dashboard() {
                       {t.tipo === "VENDA" ? "+" : "−"}{fmt(t.valor)}
                     </p>
                     {t.tipo === "VENDA" && (t.frete || 0) > 0 && (
-                      <p className="hide-mobile" style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>frete −{fmt(t.frete)}</p>
+                      <p style={{ fontSize: 11, fontFamily: "monospace", color: "#ef4444", opacity: 0.7 }}>frete −{fmt(t.frete)}</p>
                     )}
-                    {t.tipo === "VENDA" && (
-                      <p className="hide-mobile" style={{ fontSize: 11, fontFamily: "monospace", color: "#555" }}>líq. {fmt(t.valor - (t.frete || 0))}</p>
+                    {t.tipo === "VENDA" && (t.frete || 0) > 0 && (
+                      <p style={{ fontSize: 12, fontWeight: 700, fontFamily: "monospace", color: "#fff" }}>líq. {fmt(t.valor - (t.frete || 0))}</p>
                     )}
                   </div>
                   <button onClick={() => deletar(t.id)}
