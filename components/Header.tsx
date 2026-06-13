@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const PAGES: Record<string, string> = {
   "/": "Financeiro",
@@ -13,8 +13,22 @@ const PAGES: Record<string, string> = {
 
 export default function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
+  const [nome, setNome] = useState<string | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const titulo = PAGES[pathname] ?? "GG Peitas";
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => d?.nome && setNome(d.nome))
+      .catch(() => {});
+  }, [pathname]);
+
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.replace("/login");
+  }
 
   return (
     <header className="header-root">
@@ -28,8 +42,14 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* Ações */}
-        <div className="header-nav">
+        {/* Direita */}
+        <div className="header-nav" style={{ alignItems: "center" }}>
+          {nome && (
+            <span className="hide-mobile" style={{ fontSize: 11, color: "#555", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
+              Bem-vindo, <span style={{ color: "#F5C400", fontWeight: 700 }}>{nome}</span>
+            </span>
+          )}
+
           {/* Menu dropdown */}
           <div style={{ position: "relative" }}>
             <button
@@ -60,11 +80,18 @@ export default function Header() {
                       </Link>
                     );
                   })}
+                  <div style={{ borderTop: "1px solid #222", margin: "4px 0" }} />
+                  <button onClick={() => { setMenuAberto(false); logout(); }} style={{
+                    padding: "10px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                    color: "#ef4444", display: "block", width: "100%",
+                    letterSpacing: "0.05em", background: "transparent", border: "none", cursor: "pointer", textAlign: "left",
+                  }}>
+                    🚪 Sair
+                  </button>
                 </div>
               </>
             )}
           </div>
-
         </div>
       </div>
     </header>
